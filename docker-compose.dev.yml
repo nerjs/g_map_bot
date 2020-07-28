@@ -1,0 +1,17 @@
+version: '3.3'
+
+services: 
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - ./volumes_data/mongo:/data/db
+    env_file:
+      - .env
+    ports:
+      - 27018:27017
+  redis:
+    image: redis:alpine
+    ports:
+      - "6378:6379"
+    restart: always
