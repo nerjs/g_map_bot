@@ -12,6 +12,7 @@ services:
       - 27018:27017
   redis:
     image: redis:alpine
+    # command: redis-server --requirepass yourpassword
     ports:
-      - "6378:6379"
+      - "6379:6379"
     restart: always
