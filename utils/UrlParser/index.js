@@ -1,10 +1,11 @@
 const { FIELDS, ENUMS, PREPARES, PARSERS } = require('./schemes')
-const { MAPTYPES, URL_REGEXP, ERROR_TYPES } = require('./constants')
+const { MAPTYPES, URL_REGEXP, ERROR_TYPES, DEFAULT_METERS, DEFAULT_ZOOM } = require('./constants')
 
 class GMapUrlParser {
-  constructor(url) {
-    this.url = url
-
+  constructor(props) {
+    this.props = props
+    this.url = null
+    this.data = null
     this.positions = {}
 
     this.parse()
@@ -45,6 +46,22 @@ class GMapUrlParser {
   }
 
   parse() {
+    if (typeof this.props === 'string') {
+      this.url = this.props
+      this.parseStr()
+    } else if (typeof this.props === 'object') this.parseObject()
+
+    delete this.props
+    this.finalParse()
+  }
+
+  parseObject() {
+    GMapUrlParser.copyFields.forEach(key => {
+      this[key] = this.props[key]
+    })
+  }
+
+  parseStr() {
     const matched = this.url.match(URL_REGEXP)
     if (!matched || !matched.groups || !matched.groups.position) return null
 
@@ -52,44 +69,49 @@ class GMapUrlParser {
 
     const [lat, lng, ...arr] = position.split(',')
 
+    this.lat = lat
+    this.lng = lng
+
+    if (queryType) {
+      this.queryType = queryType
+      this.query = query
+    }
+
     arr.forEach(s => {
       const m = s.match(/^(?<num>[0-9\.]+)(?<type>[a-z]{1,1})$/)
       if (m && m.groups && m.groups.type && m.groups.num && !isNaN(Number(m.groups.num))) {
         this.positions[m.groups.type] = Number(m.groups.num)
-        if (m.groups.type === 'z') {
-          this.zoom = Number(m.groups.num)
-        }
-        if (m.groups.type === 'm') {
-          this.meters = Number(m.groups.num)
-        }
       }
     })
 
-    this.data = data
-    const { map, content, layers, ...remaindData } = this.parseData(data)
+    this.data = this.parseData(data)
+  }
 
-    if (map) {
-      this.map = map
-
-      if (this.map.type) {
-        this.maptype = MAPTYPES[this.map.type]
-      }
+  finalParse() {
+    if (this.queryType) {
+      this[this.queryType] = this.query
     }
 
-    if (!this.maptype) this.maptype = MAPTYPES[0]
+    if (!this.positions || typeof this.positions !== 'object') this.positions = {}
 
+    this.zoom = Number(this.positions.z) || DEFAULT_ZOOM
+    this.meters = Number(this.positions.m) || DEFAULT_METERS
+
+    this.lat = Number(this.lat)
+    this.lng = Number(this.lng)
+
+    if (!this.data) this.data = {}
+
+    const { map, content, layers, ...remaindData } = this.data
+    if (map) this.map = map
     if (content) this.content = content
     if (layers) this.layers = layers
 
     if (remaindData && Object.keys(remaindData).length) this.setError(ERROR_TYPES.REMAIND, remaindData)
 
-    if (queryType) {
-      this.queryType = queryType
-      this.query = query
-      this[queryType] = query
-    }
-    this.lat = Number(lat)
-    this.lng = Number(lng)
+    if (!this.map) this.map = { type: MAPTYPES.MAP }
+
+    this.maptype = MAPTYPES[this.map.type]
   }
 
   parseData(data) {
@@ -112,8 +134,7 @@ class GMapUrlParser {
 
     if (type === 'm') {
       const length = Number(val)
-      if (isNaN(length) || arr.length < length)
-        throw new Error(`Bad structure. [key: ${key}, length: ${length}, arr: ${arr}]`)
+      if (isNaN(length)) throw new Error(`Bad structure. [key: ${key}, length: ${length}, arr: ${arr}]`)
 
       const fieldsArr = arr.splice(0, length)
       obj[key] = {}
@@ -140,10 +161,6 @@ class GMapUrlParser {
         res[fieldName] = value
         const enumStr = this.getEnumStr(key, parents, value)
         if (enumStr) res[`${fieldName}Str`] = enumStr
-        if (key === '2e') {
-          console.log({ res, fieldName, enumStr })
-          // process.exit()
-        }
         return res
       } else if (type === 'm') {
         value = this.parseFields(obj[key], [...parents, key])
@@ -178,6 +195,15 @@ class GMapUrlParser {
     const key = PREPARES[[...parents, field].join('.')]
     return key ? key(value) : value
   }
+
+  toJSON() {
+    return GMapUrlParser.copyFields.reduce((obj, key) => {
+      if (this[key]) obj[key] = this[key]
+      return obj
+    }, {})
+  }
+
+  static copyFields = ['lat', 'lng', 'queryType', 'query', 'data', 'positions', 'url']
 }
 
 module.exports = GMapUrlParser

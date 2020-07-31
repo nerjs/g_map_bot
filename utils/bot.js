@@ -7,8 +7,12 @@ const { TELEGRAM_TOKEN, NODE_ENV } = process.env
 
 const bot = new Telegraf(TELEGRAM_TOKEN)
 
-if (NODE_ENV !== 'production') bot.use(updateLogger({ colors: true }))
+// if (NODE_ENV !== 'production') bot.use(updateLogger({ colors: true }))
 bot.use(session)
+
+bot.catch(e => {
+  logger.error(e)
+})
 
 setTimeout(
   () =>

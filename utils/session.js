@@ -2,10 +2,12 @@ const RedisSession = require('telegraf-session-redis')
 const { Context } = require('telegraf')
 const { getRedisParams } = require('./redis')
 const { REDIS_DBS, TTL } = require('../constants')
+const { context } = require('./bot')
 
 const getKey = (userId, chatId) => {
   if (userId instanceof Context) {
-    if (!userId.from || !userId.chat) return null
+    if (!userId.from || (!userId.chat && userId.updateType !== 'inline_query')) return null
+    if (!userId.chat && userId.updateType === 'inline_query') return getKey('inline_query', userId.from.id)
     return getKey(userId.from.id, userId.chat.id)
   }
 
