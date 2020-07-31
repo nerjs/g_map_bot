@@ -19,6 +19,7 @@
     "@googlemaps/google-maps-services-js": "3.1.4",
     "@nerjs/eslint-config": "1.0.1",
     "dotenv": "8.2.0",
+    "helpers-promise": "1.2.32",
     "moment": "2.27.0",
     "mongoose": "5.9.26",
     "needle": "2.5.0",
