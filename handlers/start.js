@@ -4,7 +4,9 @@ const { UNDEFINED_ERROR } = require('../messages/short')
 
 // startPayload
 module.exports = async ctx => {
+  console.log(ctx)
   if (ctx.startPayload) {
+    console.log(1, ctx.startPayload)
     const emptyReply = ctx => ctx.reply(UNDEFINED_ERROR)
     return parseQuery(ctx.startPayload, ctx, { emptyQuery: emptyReply, emptyResult: emptyReply })
   }

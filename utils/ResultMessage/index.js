@@ -19,7 +19,7 @@ class ResultMessage {
     let msg = `*${this.result.title}*\n`
     msg += `_${this.result.lat}:${this.result.lng}_`
 
-    return msg.replace('.', '\\.').replace(':', '\\:')
+    return msg.replace(/\./g, '\\.').replace(/:/g, '\\:')
   }
 
   markup() {
@@ -99,9 +99,7 @@ class ResultMessage {
     }
 
     if (this.isMessage()) {
-      console.log('message')
       if (this.result.img) {
-        console.log('img')
         return this.ctx.replyWithPhoto(this.result.img.link, await this.extra())
       } else {
         return this.ctx.replyWithMarkdown(this.message(), await this.extra())
