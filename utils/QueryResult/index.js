@@ -41,7 +41,7 @@ class QueryResult {
   get title() {
     if (this.query.url) return `url: ${this.query.url.maptype}`
     if (this.query.search) return `search: ${this.query.search}`
-    if (this.query.id) return `ID${this.query.type ? ` (${this.query.type})` : ''}: ${this.query.id}`
+    if (this.query.id) return `ID${this.query.type ? ` \\(${this.query.type}\\)` : ''}: ${this.query.id}`
     return 'none'
   }
 

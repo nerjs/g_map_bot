@@ -16,10 +16,10 @@ class ResultMessage {
   }
 
   message() {
-    let msg = `***${this.result.title}***\n`
-    msg += `___${this.result.lat}:${this.result.lng}___`
+    let msg = `*${this.result.title}*\n`
+    msg += `_${this.result.lat}:${this.result.lng}_`
 
-    return msg
+    return msg.replace('.', '\\.').replace(':', '\\:')
   }
 
   markup() {
@@ -31,6 +31,8 @@ class ResultMessage {
     if (link) inline.push([Markup.urlButton('link', this.result.url)])
 
     if (reaction) inline.push([Markup.callbackButton('👍 0', 'like'), Markup.callbackButton('0 👎', 'dislike')])
+
+    if (this.isPrivate()) inline.push([Markup.callbackButton('edit', `edit:${this.result.id}`)])
 
     if (inline.length) markup.inline_keyboard = inline
 
@@ -47,6 +49,11 @@ class ResultMessage {
       extra.switch_pm_parameter = createCacheId(inlineCache.getId(this.ctx))
     } else {
       extra.reply_markup = this.markup()
+      extra.parse_mode = 'MarkdownV2'
+
+      if (this.result.img) {
+        extra.caption = this.message()
+      }
     }
 
     return extra
@@ -88,12 +95,38 @@ class ResultMessage {
 
   async send() {
     if (this.isInlineQuery()) {
-      return console.log(await this.ctx.answerInlineQuery([this.inlineQueryResult()], await this.extra()))
+      return this.ctx.answerInlineQuery([this.inlineQueryResult()], await this.extra())
+    }
+
+    if (this.isMessage()) {
+      console.log('message')
+      if (this.result.img) {
+        console.log('img')
+        return this.ctx.replyWithPhoto(this.result.img.link, await this.extra())
+      } else {
+        return this.ctx.replyWithMarkdown(this.message(), await this.extra())
+      }
     }
   }
 
   isInlineQuery() {
     return this.ctx.updateType === ResultMessage.updateTypes.INLINE_QUERY
+  }
+
+  isMessage() {
+    return this.ctx.updateType === ResultMessage.updateTypes.MESSAGE
+  }
+
+  isPrivate() {
+    return this.isMessage() && this.ctx.chat && this.ctx.chat.type === ResultMessage.chatTypes.PRIVATE
+  }
+
+  isGroup() {
+    return (
+      this.isMessage() &&
+      this.ctx.chat &&
+      (this.ctx.chat.type === ResultMessage.chatTypes.SUPERGROUP || this.ctx.chat.type === ResultMessage.chatTypes.GROUP)
+    )
   }
 
   static inlineResultTypes = {
@@ -103,6 +136,13 @@ class ResultMessage {
 
   static updateTypes = {
     INLINE_QUERY: 'inline_query',
+    MESSAGE: 'message',
+  }
+
+  static chatTypes = {
+    PRIVATE: 'private',
+    GROUP: 'group',
+    SUPERGROUP: 'supergroup',
   }
 }
 
