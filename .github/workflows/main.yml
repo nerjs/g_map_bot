@@ -63,7 +63,7 @@ jobs:
 
   deploy:
 
-    runs-on: deploy-server
+    runs-on: deploy_server
     if: github.ref == 'refs/heads/master'
     needs: [ correct_app, correct_docker_build ]
 
