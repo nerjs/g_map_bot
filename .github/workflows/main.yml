@@ -78,5 +78,5 @@ jobs:
         run : sleep 60
 
       - name: "Check containers"
-        run : ./scripts/check_containers.sh
+        run : sh ./scripts/check_containers.sh
    
