@@ -61,22 +61,22 @@ jobs:
         run : sh ./scripts/check_containers.sh
 
 
-  # deploy:
+  deploy:
 
-  #   runs-on: deploy-server
-  #   if: github.ref == 'refs/heads/master'
-  #   needs: [ correct_app, correct_docker_build ]
+    runs-on: deploy-server
+    if: github.ref == 'refs/heads/master'
+    needs: [ correct_app, correct_docker_build ]
 
-  #   steps:
+    steps:
 
-  #     - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
 
-  #     - name: deploy 
-  #       run : sh ./scripts/setup.sh prod
+      - name: deploy 
+        run : sh ./scripts/setup.sh prod
 
-  #     - name: wait
-  #       run : sleep 60
+      - name: wait
+        run : sleep 60
 
-  #     - name: "Check containers"
-  #       run : ./scripts/check_containers.sh
+      - name: "Check containers"
+        run : ./scripts/check_containers.sh
    
