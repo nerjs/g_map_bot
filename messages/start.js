@@ -6,4 +6,5 @@ exports.START_MESSAGE = `
 • /queue \\- _Queue description_
 • /settings \\- _Settings description_
 
+👍
 `
