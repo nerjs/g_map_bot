@@ -1,0 +1,82 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  correct_app:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 12.x ]
+
+    steps:
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - uses: actions/checkout@v1
+
+      - name: Versions
+        run : |
+          node -v
+          npm -v
+          yarn -v
+      - name: "Install packages"
+        run : yarn install --production=false --audit
+    
+      - name: Lint
+        run : yarn lint
+
+      - name: Tests 
+        run : yarn test
+
+  correct_docker_build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Versions
+        run : |
+          git --version
+          docker -v 
+          docker-compose -v
+      - uses: actions/checkout@v1
+
+      - name: "Run containers"
+        run : sh ./scripts/setup.sh ci 
+
+      - name: wait
+        run : sleep 20
+
+      - name: "Check containers"
+        run : sh ./scripts/check_containers.sh
+
+
+  # deploy:
+
+  #   runs-on: deploy-server
+  #   if: github.ref == 'refs/heads/master'
+  #   needs: [ correct_app, correct_docker_build ]
+
+  #   steps:
+
+  #     - uses: actions/checkout@v1
+
+  #     - name: deploy 
+  #       run : sh ./scripts/setup.sh prod
+
+  #     - name: wait
+  #       run : sleep 60
+
+  #     - name: "Check containers"
+  #       run : ./scripts/check_containers.sh
+   

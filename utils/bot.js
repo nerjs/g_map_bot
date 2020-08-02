@@ -17,10 +17,12 @@ bot.catch(e => {
 
 module.exports = bot
 
-files
-  .then(() => bot.launch())
-  .then(() => logger.info('Bot started!'))
-  .catch(e => {
-    logger.error(e)
-    process.exit(1)
-  })
+if (!process.env.BOT_NOT_LAUNCH) {
+  files
+    .then(() => bot.launch())
+    .then(() => logger.info('Bot started!'))
+    .catch(e => {
+      logger.error(e)
+      process.exit(1)
+    })
+}
