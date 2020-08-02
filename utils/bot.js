@@ -2,6 +2,7 @@ const { Telegraf } = require('telegraf')
 const updateLogger = require('telegraf-update-logger')
 const logger = require('nlogs')(module)
 const session = require('./session')
+const files = require('./files')
 
 const { TELEGRAM_TOKEN, NODE_ENV } = process.env
 
@@ -14,16 +15,12 @@ bot.catch(e => {
   logger.error(e)
 })
 
-setTimeout(
-  () =>
-    bot
-      .launch()
-      .then(() => logger.info('Start bot'))
-      .catch(e => {
-        logger.error(e)
-        process.exit()
-      }),
-  1000,
-)
-
 module.exports = bot
+
+files
+  .then(() => bot.launch())
+  .then(() => logger.info('Bot started!'))
+  .catch(e => {
+    logger.error(e)
+    process.exit(1)
+  })
