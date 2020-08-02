@@ -2,8 +2,7 @@ const path = require('path')
 const fs = require('fs-extra')
 const logger = require('nlogs')(module)
 
-const filesDir = path.join(__dirname, 'files')
-logger.debug(path.join(filesDir, 'status'))
+const filesDir = path.join(process.cwd(), 'files')
 
 module.exports = fs
   .ensureDir(filesDir)
