@@ -10,7 +10,7 @@
     "docker:stop": "docker-compose -f docker-compose.dev.yml down",
     "docker:restart": "npm run docker:stop && npm run docker:start",
     "docker:reload": "npm run docker:stop && rm -rf ./volumes_data && npm run docker:build",
-    "lint": "eslint ./*",
+    "lint": "eslint ./**/*.js",
     "test": "echo \"Test feature\""
   },
   "repository": "git@github.com:nerjs/g_map_bot.git",
