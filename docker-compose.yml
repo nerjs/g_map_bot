@@ -44,6 +44,6 @@ services:
     volumes: 
       - ./configs/nginx.conf:/etc/nginx/nginx.conf
       - ${VOLUMES_PATH}/logs/nginx:/var/log/nginx
-      - ${VOLUMES_PATH}/files:/usr/share/nginx/html
+      - ${VOLUMES_PATH}/files:/data/www
     depends_on: 
       - bot
