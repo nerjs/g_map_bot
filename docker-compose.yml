@@ -32,18 +32,16 @@ services:
     restart: always
     env_file: 
       - ./.env
-    volumes:
-      - ${VOLUMES_PATH}/files:/app/files
 
-  nginx:
-    image: nginx
-    env_file:
-      - .env
-    ports: 
-      - ${FILES_PORT}:80
-    volumes: 
-      - ./configs/nginx.conf:/etc/nginx/nginx.conf
-      - ${VOLUMES_PATH}/logs/nginx:/var/log/nginx
-      - ${VOLUMES_PATH}/files:/data/www
-    depends_on: 
-      - bot
+  # nginx:
+  #   image: nginx
+  #   env_file:
+  #     - .env
+  #   ports: 
+  #     - ${FILES_PORT}:80
+  #   volumes: 
+  #     - ./configs/nginx.conf:/etc/nginx/nginx.conf
+  #     - ${VOLUMES_PATH}/logs/nginx:/var/log/nginx
+  #     - ${VOLUMES_PATH}/files:/data/www
+  #   depends_on: 
+  #     - bot
