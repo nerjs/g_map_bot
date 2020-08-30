@@ -18,6 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "@googlemaps/google-maps-services-js": "3.1.4",
+    "@nerjs/batchloader": "1.0.12",
     "@nerjs/eslint-config": "1.0.1",
     "colors": "1.4.0",
     "dotenv": "8.2.0",
