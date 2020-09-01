@@ -1,6 +1,5 @@
-• Add /info command
-  info fields:
-    • `Version`
-    • `Users`
-    • `Uptime`
-    • `Source`
+• Add /search command
+• Update /help command
+• Update /settings command
+• Add text handler
+  text message equal /search
