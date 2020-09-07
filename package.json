@@ -34,7 +34,8 @@
     "redis": "3.0.2",
     "telegraf": "3.38.0",
     "telegraf-session-redis": "5.1.0",
-    "wait-port": "0.2.9"
+    "wait-port": "0.2.9",
+    "yup": "0.29.3"
   },
   "devDependencies": {
     "nodemon": "2.0.4"
